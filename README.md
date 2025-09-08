@@ -582,17 +582,17 @@ public class Demo {
 
 > Observações
 >
-> * **LinkedList** é excelente em mutações nos **extremos** (início/fim) e ruim em acesso aleatório por índice.
+> * **LinkedList** apresenta bom desempenho em mutações nos **extremos** (início/fim) e ruim em acesso aleatório por índice.
 > * **ArrayList** vence em leituras sequenciais e acesso por índice graças à **localidade de cache** (memória contígua).
 > * Overhead de memória: `LinkedList` guarda **ponteiros extras** por nó (`prev` e `next`).
 
 ---
 
-## 3.3 Comparativo (pior caso salvo indicação de amortizado)
+## 3.3 Comparativo 
 
 | Operação / Estrutura    | ArrayList                                | LinkedList                                  |
 | ----------------------- | ---------------------------------------- | ------------------------------------------- |
-| **Adicionar no fim**    | **O(1) amortizado** *(O(n) no *resize*)* | **O(1)**                                    |
+| **Adicionar no fim**    | **O(n)**                                 | **O(1)**                                    |
 | **Adicionar no início** | **O(n)**                                 | **O(1)**                                    |
 | **Adicionar no meio**   | **O(n)**                                 | **O(n)** *(localização **O(min(i, n−i))**)* |
 | **Remover do fim**      | **O(1)**                                 | **O(1)**                                    |
