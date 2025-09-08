@@ -537,8 +537,6 @@ public class Demo {
 
 # Seção 3 — Funcionamento interno e complexidade de **ArrayList** e **LinkedList**
 
-> Versão em **Markdown** baseada no texto que você mandou, com **correções** e **acréscimos** pontuais. Mantive a estrutura 3.1/3.2/3.3.
-
 ## 3.1 ArrayList
 
 ### Funcionamento interno
