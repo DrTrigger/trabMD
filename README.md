@@ -533,3 +533,75 @@ public class Demo {
 > Observações finais:
 >
 > 1. O *early stop* das versões ordenadas melhora **melhor** e **caso médio** em distribuições favoráveis, mas **não altera** o pior caso. 2) O armazenamento de `tail` garante `adicionar` **O(1)** amortizado na lista não ordenada. 3) Todas as operações usam espaço auxiliar **O(1)**; a estrutura total ocupa **O(n)** nós.
+
+
+# Seção 3 — Funcionamento interno e complexidade de **ArrayList** e **LinkedList**
+
+> Versão em **Markdown** baseada no texto que você mandou, com **correções** e **acréscimos** pontuais. Mantive a estrutura 3.1/3.2/3.3.
+
+## 3.1 ArrayList
+
+### Funcionamento interno
+
+* Implementado como **vetor dinâmico** (`Object[]`).
+* Possui **capacidade** interna e cresce automaticamente quando necessário (via *resize*; `ensureCapacity` apenas antecipa esse crescimento).
+* Elementos ficam **contíguos na memória**.
+* Acesso por índice é **direto** (aritmética de ponteiros), portanto `get(i)`/`set(i)` ⇒ **O(1)**.
+
+### Operações
+
+| Operação                       | Complexidade                                    | Explicação                                                                                                                                                                                                 |
+| ------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Adicionar no fim**           | **O(1) amortizado** *(O(n) apenas no *resize*)* | Se houver espaço, coloca na próxima posição ⇒ **O(1)**; quando faltar espaço, cria-se um array maior e **copia** todos os elementos ⇒ **O(n)**. Como o *resize* é **raro**, o custo amortizado é **O(1)**. |
+| **Adicionar no início / meio** | **O(n)**                                        | Precisa **deslocar** todos os elementos à direita.                                                                                                                                                         |
+| **Remover do fim**             | **O(1)**                                        | Decrementa `size` (e costuma *nullar* a última posição).                                                                                                                                                   |
+| **Remover do início / meio**   | **O(n)**                                        | **Desloca** à esquerda os elementos à direita do removido.                                                                                                                                                 |
+| **Acessar por índice**         | **O(1)**                                        | Acesso direto pelo índice.                                                                                                                                                                                 |
+| **Buscar por valor**           | **O(n)**                                        | Varredura sequencial até encontrar.                                                                                                                                                                        |
+
+---
+
+## 3.2 LinkedList
+
+### Funcionamento interno
+
+* Implementada como **lista duplamente encadeada** (cada nó guarda `prev` e `next`).
+* Mantém referências para **`first`** (head), **`last`** (tail) e `size`.
+* **Não** há acesso direto por índice: para chegar ao elemento `i`, é preciso **percorrer** pela frente **ou** por trás (o que estiver mais perto).
+
+### Operações
+
+| Operação                | Complexidade                                                    | Explicação                                                                                                      |
+| ----------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Adicionar no fim**    | **O(1)**                                                        | Usa `last`: encadeia o novo nó e atualiza ponteiros.                                                            |
+| **Adicionar no início** | **O(1)**                                                        | Cria nó antes do `first` e atualiza ponteiros.                                                                  |
+| **Adicionar no meio**   | **O(n)** *(localização **O(min(i, n−i))** + inserção **O(1)**)* | É preciso **localizar** a posição (`i`) percorrendo a partir do lado mais próximo; a inserção em si é **O(1)**. |
+| **Remover do fim**      | **O(1)**                                                        | Desencadeia `last` e ajusta ponteiros.                                                                          |
+| **Remover do início**   | **O(1)**                                                        | Desencadeia `first` e ajusta ponteiros.                                                                         |
+| **Remover do meio**     | **O(n)** *(localização **O(min(i, n−i))** + remoção **O(1)**)*  | Encontra o nó e o **desliga** atualizando `prev/next`.                                                          |
+| **Acessar por índice**  | **O(min(i, n−i))**                                              | Percorre pela frente **ou** por trás até `i`.                                                                   |
+| **Buscar por valor**    | **O(n)**                                                        | Percorre nós comparando com `equals`.                                                                           |
+
+> Observações
+>
+> * **LinkedList** é excelente em mutações nos **extremos** (início/fim) e ruim em acesso aleatório por índice.
+> * **ArrayList** vence em leituras sequenciais e acesso por índice graças à **localidade de cache** (memória contígua).
+> * Overhead de memória: `LinkedList` guarda **ponteiros extras** por nó (`prev` e `next`).
+
+---
+
+## 3.3 Comparativo (pior caso salvo indicação de amortizado)
+
+| Operação / Estrutura    | ArrayList                                | LinkedList                                  |
+| ----------------------- | ---------------------------------------- | ------------------------------------------- |
+| **Adicionar no fim**    | **O(1) amortizado** *(O(n) no *resize*)* | **O(1)**                                    |
+| **Adicionar no início** | **O(n)**                                 | **O(1)**                                    |
+| **Adicionar no meio**   | **O(n)**                                 | **O(n)** *(localização **O(min(i, n−i))**)* |
+| **Remover do fim**      | **O(1)**                                 | **O(1)**                                    |
+| **Remover do início**   | **O(n)**                                 | **O(1)**                                    |
+| **Remover do meio**     | **O(n)**                                 | **O(n)** *(localização **O(min(i, n−i))**)* |
+| **Acessar por índice**  | **O(1)**                                 | **O(min(i, n−i))**                          |
+| **Buscar por valor**    | **O(n)**                                 | **O(n)**                                    |
+
+> Dica de uso: **ArrayList** é ótimo quando há muitas leituras/acessos por índice e poucas inserções/remoções no meio; **LinkedList** é útil quando há muitas operações nos **extremos** (fila/deque), com pouco acesso aleatório.
+
