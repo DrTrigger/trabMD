@@ -7,103 +7,128 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.*;
 
 
 public class Main {
+
+    public static final String NOME_ARQUIVO =  "alunosOrdenados1m.txt";
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("==== Configuração inicial ====");
-        boolean ordenada = perguntarOrdenacao(sc);
-        GenericLinkedList<Aluno> lista = new GenericLinkedList<>(ordenada, AlunoComparators.porMatricula());
-        System.out.println("Lista criada: " + (lista.isOrdenada() ? "ORDENADA" : "NÃO ORDENADA") + " (Comparator: matrícula) ");
+        //Passo 1: Alimentar cada Estrutura de dados com os arquivos que criamos. --------------------------------------------------
 
-                // Repetidor controlado por sentinela (opção 0 encerra)
-        while (true) {
-            try {
-                exibirMenu();
-                System.out.print("Opção: ");
-                String entrada = sc.nextLine().trim();
-                int opcao = Integer.parseInt(entrada); // lança NumberFormatException se não for número
+        /**
+         * @ordenada = TRUE
+         */
+        GenericLinkedList<Aluno> listaLinkedListOrdenada = new GenericLinkedList<>(true, AlunoComparators.porMatricula());
 
-                if (opcao == 0) {
-                    System.out.println("Encerrando... Até mais!");
-                    break; // sentinela
-                }
+        /**
+         * @ordenada = FALSE
+         */
+        GenericLinkedList<Aluno> listaLinkedListDesordenada = new GenericLinkedList<>(false, AlunoComparators.porMatricula());
 
-                switch (opcao) {
-                    case 1:
-                        Double inicio = (double) System.currentTimeMillis();
-                        adicionarAluno(sc, lista);
-                        Double fim = (double) System.currentTimeMillis();
-                        System.out.println("Tudo rodou em : " +  (fim - inicio)/1000);
-                        break;
-                    case 2:
-                        listar(lista);
-                        break;
-                    case 3:
-                        pesquisarAluno(sc, lista);
-                        break;
-                    case 4:
-                        removerAluno(sc, lista);
-                        break;
-                    default:
-                        System.out.println("Opção inexistente. Tente novamente. ");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida: digite um número correspondente à opção. ");
-            } catch (Exception e) {
-                // Tratamento genérico para qualquer outra exceção inesperada
-                System.out.println("Ocorreu um erro: " + e.getMessage());
-            }
-        }
+        /**
+         * @ArrayList
+         */
+        List<Aluno> listaArrayList = new ArrayList<>();
 
-        /** 1 - Inserir um elemento no fim das duas listas, exibindo o tempo gasto para inserir em cada uma delas.
-            1.1 - GenericLinkedList (ordenada)*/
+
+        popularLista(listaLinkedListOrdenada);
+        popularLista(listaLinkedListDesordenada);
+        popularLista(listaArrayList);
+
+
+        System.out.println("Adicionando (LinkedList Nao ordenada) no começo: ");
+        inserirEmPosicao(sc, listaLinkedListDesordenada, false);
+        System.out.println("-----------------------------");
+
+        long inicio = System.nanoTime();
+        listaArrayList.add(new Aluno("138742", "Ricardo"));
+        long fim = System.nanoTime();
+
+        double ms = (fim - inicio) / 1_000_000.0;
+        System.out.printf("Tempo ArrayList (add no último): %.3f ms%n", ms);
+
+        inicio = System.nanoTime();
+        adicionarAluno(listaLinkedListOrdenada, "282348", "Ricardo");
+        fim = System.nanoTime();
+
+        ms = (fim - inicio) / 1_000_000.0;
+        System.out.printf("Tempo GenericList Ordenada (add no último): %.3f ms%n", ms);
+
+
+        System.out.println("Adicionando no meio (LinkedList Nao ordenada): ");
+        inserirEmPosicao(sc, listaLinkedListDesordenada, true);
+        System.out.println("-----------------------------");
 
 
 
-        lerArquivo("alunosOrdenados.txt", lista);
+        inicio = System.nanoTime();
+        listaArrayList.add(listaArrayList.size()/2, new Aluno("99999", "Luiz"));
+        fim = System.nanoTime();
+        ms = (fim - inicio) / 1_000_000.0;
+        System.out.printf("Tempo ArrayList (add no meio): %.3f ms%n", ms);
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------
 
 
 
 
-
-        sc.close();
     }
 
 
-    private static  void lerArquivo(String nome_arquivo, GenericLinkedList<Aluno> genericList) {
 
-        Double inicio = (double) System.currentTimeMillis();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(nome_arquivo))) {
+    public static void popularLista(GenericLinkedList<Aluno> list) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(NOME_ARQUIVO))) {
             int numRegistros = Integer.parseInt(reader.readLine().trim());
             System.out.println("Número de registros: " + numRegistros);
 
             String linha;
             while ((linha = reader.readLine()) != null) {
                 String[] partes = linha.split(";");
-                int id = Integer.parseInt(partes[0]);
-                //botar matricula para ordenada aqui e arrayList aqui
 
+                int matricula = Integer.parseInt(partes[0]);
                 String nome = partes[1];
-                float nota = Float.parseFloat(partes[2]);
 
-                adicionarAluno(genericList, String.valueOf(id), nome);
+                adicionarAluno(list, String.valueOf(matricula), nome);
 
-                //System.out.printf("ID: %d | Nome: %s | Nota: %.2f%n", id, nome, nota);
             }
 
-            Double fim = (double) System.currentTimeMillis();
-            System.out.println("Tudo rodou em : " +  (fim - inicio)/1000);
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.err.println("Erro ao processar um dos valores numéricos: " + e.getMessage());
         }
     }
+
+    public static void popularLista(List<Aluno> list) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(NOME_ARQUIVO))) {
+            int numRegistros = Integer.parseInt(reader.readLine().trim());
+            System.out.println("Número de registros: " + numRegistros);
+
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] partes = linha.split(";");
+
+                int matricula = Integer.parseInt(partes[0]);
+                String nome = partes[1];
+
+                list.add(new Aluno(String.valueOf(matricula), nome));
+
+            }
+
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Erro ao processar um dos valores numéricos: " + e.getMessage());
+        }
+    }
+
 
     private static boolean perguntarOrdenacao(Scanner sc) {
         while (true) {
@@ -117,12 +142,20 @@ public class Main {
 
     private static void exibirMenu() {
         System.out.println("==== MENU ====");
-        System.out.println("1) Adicionar aluno");
+        System.out.println("1) Adicionar aluno (padrão)");
         System.out.println("2) Listar alunos");
         System.out.println("3) Pesquisar aluno por matrícula");
         System.out.println("4) Remover aluno por matrícula");
+        System.out.println("5) Inserir em posição (apenas lista NÃO ordenada)");
         System.out.println("0) Sair");
     }
+
+    private static void adicionarAluno(GenericLinkedList<Aluno> lista, String matricula, String nome) {
+        Aluno a = new Aluno(matricula, nome);
+        lista.adicionar(a);
+        //System.out.println("Aluno adicionado. Lista agora: " + lista + " ");
+    }
+
 
     private static void adicionarAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
         System.out.print("Matrícula: ");
@@ -134,12 +167,37 @@ public class Main {
         System.out.println("Aluno adicionado. Lista agora: " + lista + " ");
     }
 
-    private static void adicionarAluno(GenericLinkedList<Aluno> lista, String mat, String nome) {
+    private static void inserirEmPosicao(Scanner sc, GenericLinkedList<Aluno> lista, boolean meio) {
+        if (lista.isOrdenada()) {
+            System.out.println("Lista é ORDENADA: inserção por posição não é permitida. Use a opção 1 para manter a ordem.");
+            return;
+        }
+        int idx;
+        if(!meio){
+            System.out.print("Índice (0.." + lista.tamanho() + "): ");
+            idx = Integer.parseInt(sc.nextLine().trim());
+        }
+        else{
+            idx = lista.tamanho()/2;
+        }
+        System.out.print("Matrícula: ");
+        String mat = sc.nextLine().trim();
+        System.out.print("Nome: ");
+        String nome = sc.nextLine().trim();
         Aluno a = new Aluno(mat, nome);
-        lista.adicionar(a);
-        //System.out.println("Aluno adicionado. Lista agora: " + lista + " ");
+        try {
+            inserirAtomico(idx, lista, a);
+        } catch (IndexOutOfBoundsException ex) {
+            System.out.println("Índice inválido: " + ex.getMessage() + " ");
+        }
     }
-
+    private static void inserirAtomico(int idx, GenericLinkedList<Aluno> lista, Aluno aluno){
+        long inicio = System.nanoTime();
+        lista.adicionarPosicao(idx, aluno);
+        long fim = System.nanoTime();
+        double ms = (fim - inicio) / 1_000_000.0;
+        System.out.printf("Tempo GenericLinkedList: %.3f ms%n", ms);
+    }
     private static void listar(GenericLinkedList<Aluno> lista) {
         System.out.println("Conteúdo da lista (tamanho=" + lista.tamanho() + "): ");
         System.out.println(lista + " ");
@@ -169,4 +227,14 @@ public class Main {
             System.out.println("Aluno não encontrado para remoção. ");
         }
     }
+
+
+
+
 }
+
+
+
+
+
+

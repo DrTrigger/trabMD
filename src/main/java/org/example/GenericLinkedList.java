@@ -83,6 +83,59 @@ public class GenericLinkedList<T> {
     }
 
     /**
+     * NOVO: Insere um elemento em uma posição específica [0..size].
+     *
+     * Regras:
+     * - Em **lista ordenada**, NÃO é permitido (lança IllegalStateException) para não quebrar a invariante de ordenação.
+     * - Em lista **não ordenada**:
+     *   - index==0 => insere no início (O(1))
+     *   - index==size => insere no fim (O(1)) usando tail
+     *   - 0<index<size => insere no meio (O(k))
+     */
+    public void adicionarPosicao(int index, T valor) {
+        if (ordered) {
+            throw new IllegalStateException(
+                    "Inserção por posição não permitida em lista ORDENADA; use adicionar(T) para manter a ordem.");
+        }
+        Objects.requireNonNull(valor, "Valor não pode ser null");
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Índice fora do intervalo: " + index + " (tamanho=" + size + ")");
+        }
+
+        Node<T> novo = new Node<>(valor);
+
+        // Inserção no início
+        if (index == 0) {
+            novo.next = head;
+            head = novo;
+            if (size == 0) tail = novo; // se estava vazia, tail também aponta pro novo
+            size++;
+            return;
+        }
+
+        // Inserção no fim
+        if (index == size) {
+            if (tail == null) { // lista estava vazia (size==0)
+                head = tail = novo;
+            } else {
+                tail.next = novo;
+                tail = novo;
+            }
+            size++;
+            return;
+        }
+
+        // Inserção no meio: avança até o nó anterior à posição
+        Node<T> prev = head;
+        for (int i = 1; i < index; i++) {
+            prev = prev.next;
+        }
+        novo.next = prev.next;
+        prev.next = novo;
+        size++;
+    }
+
+    /**
      * Retorna true se encontrar um elemento equivalente segundo o Comparator.
      * Em lista ordenada, para cedo quando o atual excede o valor.
      */
