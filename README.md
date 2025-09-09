@@ -26,160 +26,149 @@ Implementação completa de uma **lista encadeada genérica** em Java, que pode 
 ## GenericLinkedList.java
 
 ```java
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.Scanner;
 
-/**
- * Lista encadeada genérica que pode ser ordenada ou não, conforme definido no construtor.
- * A ordenação e as buscas usam o Comparator informado.
- */
-public class GenericLinkedList<T> {
-    private static class Node<T> {
-        T data;
-        Node<T> next;
-        Node(T data) { this.data = data; }
-    }
+public class Demo {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("==== Configuração inicial ====");
+        boolean ordenada = perguntarOrdenacao(sc);
+        GenericLinkedList<Aluno> lista = new GenericLinkedList<>(ordenada, AlunoComparators.porMatricula());
+        System.out.println("Lista criada: " + (lista.isOrdenada() ? "ORDENADA" : "NÃO ORDENADA") + " (Comparator: matrícula)
+");
 
-    private Node<T> head;
-    private Node<T> tail;
-    private int size;
+        // Repetidor controlado por sentinela (opção 0 encerra)
+        while (true) {
+            try {
+                exibirMenu();
+                System.out.print("Opção: ");
+                String entrada = sc.nextLine().trim();
+                int opcao = Integer.parseInt(entrada); // lança NumberFormatException se não for número
 
-    private final boolean ordered;
-    private final Comparator<? super T> comparator;
+                if (opcao == 0) {
+                    System.out.println("Encerrando... Até mais!");
+                    break; // sentinela
+                }
 
-    /**
-     * @param ordered    se true, a lista mantém ordem crescente definida pelo comparator
-     * @param comparator critério de comparação (não pode ser null)
-     */
-    public GenericLinkedList(boolean ordered, Comparator<? super T> comparator) {
-        this.ordered = ordered;
-        this.comparator = Objects.requireNonNull(comparator, "Comparator não pode ser null");
-        this.head = null;
-        this.tail = null;
-        this.size = 0;
-    }
-
-    public boolean isOrdenada() { return ordered; }
-    public int tamanho() { return size; }
-
-    /**
-     * Adiciona um elemento. Em lista ordenada, insere na posição correta.
-     * Em lista não ordenada, insere no fim (mantemos tail para O(1)).
-     */
-    public void adicionar(T novoValor) {
-        Objects.requireNonNull(novoValor, "Valor não pode ser null");
-        Node<T> novo = new Node<>(novoValor);
-
-        if (head == null) { // lista vazia
-            head = tail = novo;
-            size++;
-            return;
-        }
-
-        if (!ordered) { // inserir no fim
-            tail.next = novo;
-            tail = novo;
-            size++;
-            return;
-        }
-
-        // Lista ordenada: inserir mantendo ordem crescente
-        // Caso 1: inserir no início
-        if (comparator.compare(novoValor, head.data) <= 0) {
-            novo.next = head;
-            head = novo;
-            size++;
-            return;
-        }
-
-        // Caso 2: encontrar ponto de inserção no meio/fim
-        Node<T> prev = head;
-        Node<T> curr = head.next;
-        while (curr != null && comparator.compare(novoValor, curr.data) > 0) {
-            prev = curr;
-            curr = curr.next;
-        }
-        // insere entre prev e curr
-        prev.next = novo;
-        novo.next = curr;
-        if (curr == null) { // inseriu no fim
-            tail = novo;
-        }
-        size++;
-    }
-
-    /**
-     * Retorna true se encontrar um elemento equivalente segundo o Comparator.
-     * Em lista ordenada, para cedo quando o atual excede o valor.
-     */
-    public boolean contemElemento(T valor) {
-        return pesquisar(valor) != null;
-    }
-
-    /**
-     * Busca e retorna a referência armazenada equivalente a {@code valor},
-     * ou null se não encontrar. Em lista ordenada, faz early stop.
-     */
-    public T pesquisar(T valor) {
-        Objects.requireNonNull(valor, "Valor de busca não pode ser null");
-        Node<T> curr = head;
-        while (curr != null) {
-            int cmp = comparator.compare(curr.data, valor);
-            if (cmp == 0) return curr.data;
-            if (ordered && cmp > 0) return null; // early stop
-            curr = curr.next;
-        }
-        return null;
-    }
-
-    /**
-     * Remove o primeiro elemento equivalente a {@code valor} e o retorna;
-     * retorna null se não encontrar. Em lista ordenada, faz early stop.
-     */
-    public T remover(T valor) {
-        Objects.requireNonNull(valor, "Valor de remoção não pode ser null");
-        if (head == null) return null;
-
-        int cmpHead = comparator.compare(head.data, valor);
-        if (cmpHead == 0) { // remove head
-            T removed = head.data;
-            head = head.next;
-            if (head == null) tail = null; // lista ficou vazia
-            size--;
-            return removed;
-        }
-        if (ordered && cmpHead > 0) return null; // early stop
-
-        Node<T> prev = head;
-        Node<T> curr = head.next;
-        while (curr != null) {
-            int cmp = comparator.compare(curr.data, valor);
-            if (cmp == 0) {
-                T removed = curr.data;
-                prev.next = curr.next;
-                if (curr == tail) tail = prev;
-                size--;
-                return removed;
+                switch (opcao) {
+                    case 1:
+                        adicionarAluno(sc, lista);
+                        break;
+                    case 2:
+                        listar(lista);
+                        break;
+                    case 3:
+                        pesquisarAluno(sc, lista);
+                        break;
+                    case 4:
+                        removerAluno(sc, lista);
+                        break;
+                    case 5:
+                        inserirEmPosicao(sc, lista);
+                        break;
+                    default:
+                        System.out.println("Opção inexistente. Tente novamente.
+");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida: digite um número correspondente à opção.
+");
+            } catch (Exception e) {
+                // Tratamento genérico para qualquer outra exceção inesperada
+                System.out.println("Ocorreu um erro: " + e.getMessage());
             }
-            if (ordered && cmp > 0) return null; // early stop
-            prev = curr;
-            curr = curr.next;
         }
-        return null;
+        sc.close();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        Node<T> curr = head;
-        while (curr != null) {
-            sb.append(curr.data);
-            if (curr.next != null) sb.append(", ");
-            curr = curr.next;
+    private static boolean perguntarOrdenacao(Scanner sc) {
+        while (true) {
+            System.out.print("Deseja lista ORDENADA por matrícula? (s/n): ");
+            String resp = sc.nextLine().trim().toLowerCase();
+            if (resp.equals("s") || resp.equals("sim")) return true;
+            if (resp.equals("n") || resp.equals("nao") || resp.equals("não")) return false;
+            System.out.println("Resposta inválida. Digite 's' ou 'n'.
+");
         }
-        sb.append("]");
-        return sb.toString();
+    }
+
+    private static void exibirMenu() {
+        System.out.println("==== MENU ====");
+        System.out.println("1) Adicionar aluno (padrão)");
+        System.out.println("2) Listar alunos");
+        System.out.println("3) Pesquisar aluno por matrícula");
+        System.out.println("4) Remover aluno por matrícula");
+        System.out.println("5) Inserir em posição (apenas lista NÃO ordenada)");
+        System.out.println("0) Sair");
+    }
+
+    private static void adicionarAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
+        System.out.print("Matrícula: ");
+        String mat = sc.nextLine().trim();
+        System.out.print("Nome: ");
+        String nome = sc.nextLine().trim();
+        Aluno a = new Aluno(mat, nome);
+        lista.adicionar(a);
+        System.out.println("Aluno adicionado. Lista agora: " + lista + "
+");
+    }
+
+    private static void inserirEmPosicao(Scanner sc, GenericLinkedList<Aluno> lista) {
+        if (lista.isOrdenada()) {
+            System.out.println("Lista é ORDENADA: inserção por posição não é permitida. Use a opção 1 para manter a ordem.
+");
+            return;
+        }
+        System.out.print("Índice (0.." + lista.tamanho() + "): ");
+        int idx = Integer.parseInt(sc.nextLine().trim());
+        System.out.print("Matrícula: ");
+        String mat = sc.nextLine().trim();
+        System.out.print("Nome: ");
+        String nome = sc.nextLine().trim();
+        Aluno a = new Aluno(mat, nome);
+        try {
+            lista.adicionarPosicao(idx, a);
+            System.out.println("Inserido em " + idx + ". Lista agora: " + lista + "
+");
+        } catch (IndexOutOfBoundsException ex) {
+            System.out.println("Índice inválido: " + ex.getMessage() + "
+");
+        }
+    }
+
+    private static void listar(GenericLinkedList<Aluno> lista) {
+        System.out.println("Conteúdo da lista (tamanho=" + lista.tamanho() + "): ");
+        System.out.println(lista + "
+");
+    }
+
+    private static void pesquisarAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
+        System.out.print("Matrícula a pesquisar: ");
+        String mat = sc.nextLine().trim();
+        Aluno chave = new Aluno(mat, "—");
+        Aluno encontrado = lista.pesquisar(chave);
+        if (encontrado != null) {
+            System.out.println("Encontrado: " + encontrado + "
+");
+        } else {
+            System.out.println("Aluno não encontrado.
+");
+        }
+    }
+
+    private static void removerAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
+        System.out.print("Matrícula a remover: ");
+        String mat = sc.nextLine().trim();
+        Aluno chave = new Aluno(mat, "—");
+        Aluno removido = lista.remover(chave);
+        if (removido != null) {
+            System.out.println("Removido: " + removido);
+            System.out.println("Lista agora: " + lista + "
+");
+        } else {
+            System.out.println("Aluno não encontrado para remoção.
+");
+        }
     }
 }
 ```
