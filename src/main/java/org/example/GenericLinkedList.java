@@ -208,4 +208,18 @@ public class GenericLinkedList<T> {
         sb.append("]");
         return sb.toString();
     }
+
+
+    // dentro de GenericLinkedList<T>
+    public T obterPorIndice(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Índice: " + index + ", tamanho=" + size);
+        }
+        Node<T> curr = head;
+        for (int i = 0; i < index; i++) curr = curr.next;
+        return curr.data;
+    }
+
+
+
 }
