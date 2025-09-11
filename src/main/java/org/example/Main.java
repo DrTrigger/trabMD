@@ -25,12 +25,14 @@ public class Main {
         long ini;
         long fim;
 
-        // // ArrayList
-        // ini = System.nanoTime();
-        // popularLista(listaArrayList);
-        // fim = System.nanoTime();
-        // System.out.printf("tempo (popular arraylist): %.3f ms%n", (fim - ini) / 1_000_000.0);
-        // System.out.println();
+        // A partir de 25 Milhões de Registros é indicado executar um de cada vez
+
+        // ArrayList
+        ini = System.nanoTime();
+        popularLista(listaArrayList);
+        fim = System.nanoTime();
+        System.out.printf("tempo (popular arraylist): %.3f ms%n", (fim - ini) / 1_000_000.0);
+        System.out.println();
 
         // LinkedList
         ini = System.nanoTime();
@@ -43,23 +45,23 @@ public class Main {
 
         String nome;
 
-        // // INSERÇÕES – ArrayList (JDK)
-        // nome = "ArrayList";
-        // inserirFim(linkedListJDk, nome);
-        // inserirInicio(linkedListJDk, nome);
-        // inserirMeio(linkedListJDk, nome);
-        // // BUSCAS – ArrayList (JDK)
-        // buscarUltimo(listaArrayList, "ArrayList");
-        // buscarPenultimo(listaArrayList, "ArrayList");
-        // buscarMeio(listaArrayList, "ArrayList");
-        // System.out.println("-----------------------------");
+        // INSERÇÕES – ArrayList
+        nome = "ArrayList";
+        inserirFim(linkedListJDk, nome);
+        inserirInicio(linkedListJDk, nome);
+        inserirMeio(linkedListJDk, nome);
+        // BUSCAS – ArrayList
+        buscarUltimo(listaArrayList, "ArrayList");
+        buscarPenultimo(listaArrayList, "ArrayList");
+        buscarMeio(listaArrayList, "ArrayList");
+        System.out.println("-----------------------------");
 
-        // INSERÇÕES – LinkedList (JDK)
+        // INSERÇÕES – LinkedList
         nome = "LinkedList";
         inserirFim(linkedListJDk, nome);
         inserirInicio(linkedListJDk, nome);
         inserirMeio(linkedListJDk, nome);
-        // BUSCAS – LinkedList (JDK)
+        // BUSCAS – LinkedList
         buscarUltimo(linkedListJDk);
         buscarPenultimo(linkedListJDk);
         buscarMeio(linkedListJDk);
