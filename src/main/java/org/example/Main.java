@@ -1,113 +1,59 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+// Para executar é indicado utilizar os comandos abaixo (linux) para permitir mais uso de RAM
+// javac -d out $(find src/main/java -name "*.java")
+// java -Xmx18g -cp out org.example.Main
 
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 
 public class Main {
 
-    public static final String NOME_ARQUIVO =  "alunosOrdenados5m.txt";
+    public static final String NOME_ARQUIVO =  "alunosOrdenados75m.txt";
 
     public static void main(String[] args) {
-        //Scanner sc = new Scanner(System.in);
-        //Passo 1: Alimentar cada Estrutura de dados com os arquivos que criamos. --------------------------------------------------
-
-        /**
-         * @ordenada = TRUE
-         */
-        //GenericLinkedList<Aluno> listaLinkedListOrdenada = new GenericLinkedList<>(true, AlunoComparators.porMatricula());
-
-        /**
-         * @ordenada = FALSE
-         */
-        //GenericLinkedList<Aluno> listaLinkedListDesordenada = new GenericLinkedList<>(false, AlunoComparators.porMatricula());
-
-
-
-
         List<Aluno> listaArrayList = new ArrayList<>();
         LinkedList<Aluno> linkedListJDk = new LinkedList<>();
 
+        long ini;
+        long fim;
 
-        //popularLista(listaLinkedListOrdenada);
-        //(listaLinkedListDesordenada);
-        long ini = System.nanoTime();
-        popularLista(listaArrayList);
-        long fim = System.nanoTime();
-        System.out.printf("tempo (popular arraylist): %.3f ms%n", (fim - ini) / 1_000_000.0);
-        System.out.println();
+        // // ArrayList
+        // ini = System.nanoTime();
+        // popularLista(listaArrayList);
+        // fim = System.nanoTime();
+        // System.out.printf("tempo (popular arraylist): %.3f ms%n", (fim - ini) / 1_000_000.0);
+        // System.out.println();
+
+        // LinkedList
         ini = System.nanoTime();
         popularLista(linkedListJDk);
         fim = System.nanoTime();
         System.out.printf("tempo (popular Linkedlist): %.3f ms%n", (fim - ini) / 1_000_000.0);
         System.out.println();
 
+        // ----------------------------------------------------------------------------------------------//
 
+        String nome;
 
-        /*System.out.println("Adicionando (LinkedList Nao ordenada) no começo: ");
-        inserirEmPosicao(sc, listaLinkedListDesordenada, false);
-        System.out.println("-----------------------------");
+        // // INSERÇÕES – ArrayList (JDK)
+        // nome = "ArrayList";
+        // inserirFim(linkedListJDk, nome);
+        // inserirInicio(linkedListJDk, nome);
+        // inserirMeio(linkedListJDk, nome);
+        // // BUSCAS – ArrayList (JDK)
+        // buscarUltimo(listaArrayList, "ArrayList");
+        // buscarPenultimo(listaArrayList, "ArrayList");
+        // buscarMeio(listaArrayList, "ArrayList");
+        // System.out.println("-----------------------------");
 
-        long inicio = System.nanoTime();
-        listaArrayList.add(new Aluno("138742", "Ricardo"));
-        long fim = System.nanoTime();
-
-        double ms = (fim - inicio) / 1_000_000.0;
-        System.out.printf("Tempo ArrayList (add no último): %.3f ms%n", ms);
-
-        inicio = System.nanoTime();
-        adicionarAluno(listaLinkedListOrdenada, "282348", "Ricardo");
-        fim = System.nanoTime();
-
-        ms = (fim - inicio) / 1_000_000.0;
-        System.out.printf("Tempo GenericList Ordenada (add no último): %.3f ms%n", ms);
-
-
-        System.out.println("Adicionando no meio (LinkedList Nao ordenada): ");
-        inserirEmPosicao(sc, listaLinkedListDesordenada, true);
-        System.out.println("-----------------------------");*/
-
-        /*long inicio = System.nanoTime();
-        listaArrayList.add(new Aluno("138742", "Ricardo"));
-        long fim = System.nanoTime();
-
-        inicio = System.nanoTime();
-        listaArrayList.add(listaArrayList.size()/2, new Aluno("99999", "Luiz"));
-        fim = System.nanoTime();
-        double ms = (fim - inicio) / 1_000_000.0;
-        System.out.printf("Tempo ArrayList (add no meio): %.3f ms%n", ms);*/
-
-
-        /*
-        // Buscas – GenericLinkedList ORDENADA
-        buscarUltimo(listaLinkedListOrdenada, "GenericLinkedList (ordenada)");
-        buscarPenultimo(listaLinkedListOrdenada, "GenericLinkedList (ordenada)");
-        buscarMeio(listaLinkedListOrdenada, "GenericLinkedList (ordenada)");
-        System.out.println("-----------------------------");
-
-        // Buscas – GenericLinkedList NÃO ordenada
-        buscarUltimo(listaLinkedListDesordenada, "GenericLinkedList (não ordenada)");
-        buscarPenultimo(listaLinkedListDesordenada, "GenericLinkedList (não ordenada)");
-        buscarMeio(listaLinkedListDesordenada, "GenericLinkedList (não ordenada)");
-        System.out.println("-----------------------------");*/
-
-        // Buscas – ArrayList
-        String nome = "ArrayList";
-        inserirFim(linkedListJDk, nome);
-        inserirInicio(linkedListJDk, nome);
-        inserirMeio(linkedListJDk, nome);
-        buscarUltimo(listaArrayList, "ArrayList");
-        buscarPenultimo(listaArrayList, "ArrayList");
-        buscarMeio(listaArrayList, "ArrayList");
-
-        System.out.println("-----------------------------");
         // INSERÇÕES – LinkedList (JDK)
         nome = "LinkedList";
         inserirFim(linkedListJDk, nome);
@@ -118,16 +64,39 @@ public class Main {
         buscarPenultimo(linkedListJDk);
         buscarMeio(linkedListJDk);
         System.out.println("-----------------------------");
+    } //--------------------------------------------------------------------------------------------------------------------------
 
 
 
-        //--------------------------------------------------------------------------------------------------------------------------
 
 
 
 
-    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     private static void inserirFim(List<Aluno> lnk, String label) {
         Aluno novo = new Aluno("LKFIM", "Novo Fim");
@@ -156,9 +125,6 @@ public class Main {
         System.out.printf("%s (add MEIO n/2): %.3f ms%n", label, (fim - ini) / 1_000_000.0);
         lnk.remove(idx);                    // rollback
     }
-
-
-
 
     private static void buscarUltimo(LinkedList<Aluno> lnk) {
         if (lnk.isEmpty()) { System.out.println("LinkedList (buscar ÚLTIMO): lista vazia"); return; }
@@ -228,9 +194,7 @@ public class Main {
                 list.add(new Aluno(String.valueOf(matricula), nome));
 
             }
-            //long fim = System.nanoTime();
-            //System.out.printf("tempo (add FIM): %.3f ms%n", (fim - ini) / 1_000_000.0);
-            //System.out.println();
+
 
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
