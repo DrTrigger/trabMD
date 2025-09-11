@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 public class Main {
 
-    public static final String NOME_ARQUIVO =  "alunosOrdenados1m.txt";
+    public static final String NOME_ARQUIVO =  "alunosOrdenados5m.txt";
 
     public static void main(String[] args) {
         //Scanner sc = new Scanner(System.in);
@@ -38,9 +38,17 @@ public class Main {
 
         //popularLista(listaLinkedListOrdenada);
         //(listaLinkedListDesordenada);
-
+        long ini = System.nanoTime();
         popularLista(listaArrayList);
+        long fim = System.nanoTime();
+        System.out.printf("tempo (popular arraylist): %.3f ms%n", (fim - ini) / 1_000_000.0);
+        System.out.println();
+        ini = System.nanoTime();
         popularLista(linkedListJDk);
+        fim = System.nanoTime();
+        System.out.printf("tempo (popular Linkedlist): %.3f ms%n", (fim - ini) / 1_000_000.0);
+        System.out.println();
+
 
 
         /*System.out.println("Adicionando (LinkedList Nao ordenada) no começo: ");
@@ -154,9 +162,10 @@ public class Main {
 
     private static void buscarUltimo(LinkedList<Aluno> lnk) {
         if (lnk.isEmpty()) { System.out.println("LinkedList (buscar ÚLTIMO): lista vazia"); return; }
-        Aluno alvo = lnk.getLast();        // fora do timing
+               // fora do timing
         long ini = System.nanoTime();
-        int idx = lnk.indexOf(alvo);       // busca por valor => O(n)
+        Aluno alvo = lnk.getLast();
+        //int idx = lnk.indexOf(alvo);       // busca por valor => O(n)
         long fim = System.nanoTime();
         System.out.printf("LinkedList (buscar ÚLTIMO): %.3f ms%n", (fim - ini) / 1_000_000.0);
     }
@@ -205,6 +214,7 @@ public class Main {
 
     public static void popularLista(List<Aluno> list) {
         try (BufferedReader reader = new BufferedReader(new FileReader(NOME_ARQUIVO))) {
+            //long ini = System.nanoTime();
             int numRegistros = Integer.parseInt(reader.readLine().trim());
             System.out.println("Número de registros: " + numRegistros);
 
@@ -218,6 +228,9 @@ public class Main {
                 list.add(new Aluno(String.valueOf(matricula), nome));
 
             }
+            //long fim = System.nanoTime();
+            //System.out.printf("tempo (add FIM): %.3f ms%n", (fim - ini) / 1_000_000.0);
+            //System.out.println();
 
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
