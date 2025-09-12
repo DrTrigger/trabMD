@@ -594,7 +594,7 @@ public class Demo {
 
 # Comparação de Performance entre ArrayList e LinkedList em Cenários de Alta Carga
 
-A análise a seguir demonstra o comportamento das classes `ArrayList` e `LinkedList` em operações de adição e busca variando a quantidade (em milhões) até o limite possivel utilizando até 22GB de RAM.
+A análise a seguir demonstra o comportamento das classes `ArrayList` e `LinkedList` em operações de adição e busca variando a quantidade (em milhões) até o limite possivel utilizando até 18GB de RAM.
 
 ArrayList
 
