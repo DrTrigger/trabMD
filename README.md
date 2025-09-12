@@ -592,3 +592,28 @@ public class Demo {
 
 > Dica de uso: **ArrayList** é ótimo quando há muitas leituras/acessos por índice e poucas inserções/remoções no meio; **LinkedList** é útil quando há muitas operações nos **extremos** (fila/deque), com pouco acesso aleatório.
 
+# Comparação de Performance entre ArrayList e LinkedList em Cenários de Alta Carga
+
+A análise a seguir demonstra o comportamento das classes `ArrayList` e `LinkedList` em operações de adição e busca variando a quantidade (em milhões) até o limite possivel utilizando até 22GB de RAM.
+
+ArrayList
+
+| Número de Registros | Tempo para Popular (ms) | add FIM (ms) | add INÍCIO (ms) | add MEIO (ms) | buscar ÚLTIMO (ms) | buscar PENÚLTIMO (ms) | buscar MEIO (ms) |
+| :------------------ | :---------------------- | :----------- | :-------------- | :------------ | :----------------- | :-------------------- | :--------------- |
+| 1.000.000           | 186,491                 | 0,027        | 0,001           | 0,002         | 2,788              | 1,811                 | 0,144            |
+| 10.000.000          | 1.833,719               | 0,026        | 0,001           | 0,002         | 5,704              | 4,507                 | 1,608            |
+| 25.000.000          | 4.303,018               | 0,025        | 0,002           | 0,002         | 9,908              | 8,880                 | 3,672            |
+| 50.000.000          | 8.289,216               | 0,024        | 0,001           | 0,002         | 16,938             | 16,010                | 7,005            |
+| 75.000.000          | 11.959,346              | 0,025        | 0,001           | 0,002         | 27,279             | 26,170                | 12,299           |
+| 100.000.000         | 16.332,261              | 0,025        | 0,001           | 0,002         | 30,644             | 29,557                | 14,185           |
+
+LinkedList
+
+| Número de Registros | Tempo para Popular (ms) | add FIM (ms) | add INÍCIO (ms) | add MEIO (ms) | buscar ÚLTIMO (ms) | buscar PENÚLTIMO (ms) | buscar MEIO (ms) |
+| :------------------ | :---------------------- | :----------- | :-------------- | :------------ | :----------------- | :-------------------- | :--------------- |
+| 1.000.000           | 394,827                 | 0,003        | 0,001           | 13,863        | 0,003              | 27,534                | 12,928           |
+| 10.000.000          | 4.036,840               | 0,003        | 0,001           | 145,585       | 0,003              | 285,331               | 149,237          |
+| 25.000.000          | 10.079,167              | 0,003        | 0,002           | 397,322       | 0,003              | 795,858               | 454,535          |
+| 50.000.000          | 20.300,199              | 0,003        | 0,002           | 683,659       | 0,003              | 1.349,797             | 789,309          |
+| 75.000.000          | 33.187,499              | 0,007        | 0,004           | 1.116,200     | 0,003              | 2.354,251             | 1.242,510        |
+| 100.000.000         | 40.895,977              | 0,004        | 0,002           | 1.186,016     | 0,004              | 2.111,533             | 1.842,822        |
