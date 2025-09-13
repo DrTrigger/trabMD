@@ -784,21 +784,21 @@ Repositório no GitHub
 
 Link: https://github.com/DrTrigger/trabMD
 ### Organização (sugestão/estrutura atual):
-/src
-  /main/java
-    GenericLinkedList.java
-    Aluno.java
-    AlunoComparators.java
-    Demo.java           # menu interativo (Parte 1)
-    Bench.java          # medições da Seção 4
-    org/gerador/GeradorArquivosOrdenados.java
-/data
-  alunosOrdenados.txt  # (opcional) exemplo gerado
-/report
-  secao2.md            # análise linha a linha (complexidade)
-  secao3.md            # ArrayList vs LinkedList (teoria)
-  secao4.tex           # análise empírica (tabelas/discussão)
-README.md              # como compilar/executar
+src/
+└── main/
+    └── java/
+        └── org/
+            ├── example/
+            │   ├── Aluno.java
+            │   ├── AlunoComparators.java
+            │   ├── GenericLinkedList.java
+            │   ├── Main.java      # benchmarks/medições (Seção 4)
+            │   └── Main2.java     # versão alternativa/demonstração interativa
+            └── gerador/
+                └── GeradorArquivosOrdenados.java  # gera arquivos de entrada
+.gitignore
+README.md
+pom.xml
 
 ---
 
