@@ -990,3 +990,64 @@ public class Main {
 
 > Dica de uso: **ArrayList** é ótimo quando há muitas leituras/acessos por índice e poucas inserções/remoções no meio; **LinkedList** é útil quando há muitas operações nos **extremos** (fila/deque), com pouco acesso aleatório.
 
+
+
+# Seção 4 — Análise empírica de complexidade de **ArrayList** e **LinkedList**
+# Resultados de desempenho — ArrayList vs LinkedList
+
+## Tempo para popular a estrutura (inserir N elementos sequenciais)
+
+| Número de registros | ArrayList (ms) | LinkedList (ms) |
+| ------------------: | -------------: | --------------: |
+|              100000 |         60,168 |          21,079 |
+|             2000000 |        320,458 |         560,429 |
+|            50000000 |       6752,268 |       16395,853 |
+
+---
+
+## N = 100 000
+
+### Operações (ms)
+
+| Operação         | ArrayList | LinkedList |
+| ---------------- | --------: | ---------: |
+| add FIM          |     0,003 |      0,002 |
+| add INÍCIO       |     0,023 |      0,002 |
+| add MEIO n/2     |     0,011 |      0,912 |
+| buscar ÚLTIMO    |     1,928 |      0,002 |
+| buscar PENÚLTIMO |     1,496 |      2,420 |
+| buscar MEIO n/2  |     0,215 |      0,388 |
+
+---
+
+## N = 2 000 000
+
+### Operações (ms)
+
+| Operação         | ArrayList | LinkedList |
+| ---------------- | --------: | ---------: |
+| add FIM          |     0,007 |      0,003 |
+| add INÍCIO       |     0,498 |      0,002 |
+| add MEIO n/2     |     0,194 |     42,755 |
+| buscar ÚLTIMO    |     4,138 |      0,004 |
+| buscar PENÚLTIMO |     2,798 |    101,905 |
+| buscar MEIO n/2  |     0,251 |     65,891 |
+
+---
+
+## N = 50 000 000
+
+### Operações (ms)
+
+| Operação         | ArrayList | LinkedList |
+| ---------------- | --------: | ---------: |
+| add FIM          |     0,007 |      0,003 |
+| add INÍCIO       |   177,947 |      0,004 |
+| add MEIO n/2     |    93,897 |   1351,250 |
+| buscar ÚLTIMO    |    13,997 |      0,004 |
+| buscar PENÚLTIMO |    12,673 |   2656,531 |
+| buscar MEIO n/2  |     5,060 |   1367,887 |
+
+
+
+
