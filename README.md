@@ -992,62 +992,110 @@ public class Main {
 
 
 
-# Seção 4 — Análise empírica de complexidade de **ArrayList** e **LinkedList**
-# Resultados de desempenho — ArrayList vs LinkedList
+# Seção 4 — Análise Empírica de Desempenho: *ArrayList* vs *LinkedList*
 
-## Tempo para popular a estrutura (inserir N elementos sequenciais)
+## Objetivo
+Avaliar, na prática, como o tempo das operações de **inserção** e **busca** de *ArrayList* e *LinkedList* varia com o **tamanho da entrada**, e confrontar os resultados com a análise matemática apresentada na Seção 3.
 
-| Número de registros | ArrayList (ms) | LinkedList (ms) |
-| ------------------: | -------------: | --------------: |
-|              100000 |         60,168 |          21,079 |
-|             2000000 |        320,458 |         560,429 |
-|            50000000 |       6752,268 |       16395,853 |
+## Metodologia
 
----
+### Dados
+Foram utilizados três arquivos com aproximadamente **100.000**, **2.000.000** e **50.000.000** registros, no formato `matrícula;nome;nota`.
 
-## N = 100 000
+### Procedimento
+Para cada arquivo:
+1. As estruturas *ArrayList* e *LinkedList* foram **populadas** linha a linha a partir do arquivo.
+2. Em seguida, foram cronometradas as seguintes operações, separadamente em cada estrutura:
+   - Inserção **no fim**;
+   - Inserção **no início** (índice 0);
+   - Inserção **no meio** (índice `n/2`);
+   - Busca do **último** elemento;
+   - Busca do **penúltimo** elemento;
+   - Busca do elemento **do meio** (índice `n/2`).
 
-### Operações (ms)
+### Cronometria
+Os tempos foram medidos com `System.nanoTime()`, reportados em milissegundos (ms).
+<!-- Opcional: repetir cada medição K vezes e usar mediana para reduzir ruído. -->
 
-| Operação         | ArrayList | LinkedList |
-| ---------------- | --------: | ---------: |
-| add FIM          |     0,003 |      0,002 |
-| add INÍCIO       |     0,023 |      0,002 |
-| add MEIO n/2     |     0,011 |      0,912 |
-| buscar ÚLTIMO    |     1,928 |      0,002 |
-| buscar PENÚLTIMO |     1,496 |      2,420 |
-| buscar MEIO n/2  |     0,215 |      0,388 |
+## Resultados
 
----
+### Tempo de carga a partir do arquivo
+**Tempo para popular as estruturas a partir do arquivo (ms).**
 
-## N = 2 000 000
+| **n (registros)** | **ArrayList** | **LinkedList** |
+|---:|---:|---:|
+| 100.000    | 60,168   | 21,079 |
+| 2.000.000  | 320,458  | 560,429 |
+| 50.000.000 | 6752.268 | 16395.853 |
 
-### Operações (ms)
+**Observação.** Para *n* pequeno (100k), a carga na *LinkedList* foi mais rápida; à medida que *n* cresce, a *ArrayList* passa a ser mais eficiente (6,75 s vs 16,40 s em 50M), consistente com melhor localidade de cache e menor sobrecarga por elemento ao inserir no fim (amortizado).
 
-| Operação         | ArrayList | LinkedList |
-| ---------------- | --------: | ---------: |
-| add FIM          |     0,007 |      0,003 |
-| add INÍCIO       |     0,498 |      0,002 |
-| add MEIO n/2     |     0,194 |     42,755 |
-| buscar ÚLTIMO    |     4,138 |      0,004 |
-| buscar PENÚLTIMO |     2,798 |    101,905 |
-| buscar MEIO n/2  |     0,251 |     65,891 |
+### Inserções
 
----
+**Inserções para n = 100.000 (ms).**
 
-## N = 50 000 000
+| **Estrutura** | **Fim** | **Início (0)** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 0,003 | 0,023 | 0,011 |
+| LinkedList | 0,002 | 0,002 | 0,912 |
 
-### Operações (ms)
+**Inserções para n = 2.000.000 (ms).**
 
-| Operação         | ArrayList | LinkedList |
-| ---------------- | --------: | ---------: |
-| add FIM          |     0,007 |      0,003 |
-| add INÍCIO       |   177,947 |      0,004 |
-| add MEIO n/2     |    93,897 |   1351,250 |
-| buscar ÚLTIMO    |    13,997 |      0,004 |
-| buscar PENÚLTIMO |    12,673 |   2656,531 |
-| buscar MEIO n/2  |     5,060 |   1367,887 |
+| **Estrutura** | **Fim** | **Início (0)** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 0,007 | 0,498 | 0,194 |
+| LinkedList | 0,003 | 0,002 | 42,755 |
 
+**Inserções para n = 50.000.000 (ms).**
 
+| **Estrutura** | **Fim** | **Início (0)** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 0,007 | 177,947 | 93,897 |
+| LinkedList | 0,003 | 0,004   | 1351,250 |
+
+### Buscas
+
+**Buscas para n = 100.000 (ms).**
+
+| **Estrutura** | **Último** | **Penúltimo** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 1,928 | 1,496 | 0,215 |
+| LinkedList | 0,002 | 2,420 | 0,388 |
+
+**Buscas para n = 2.000.000 (ms).**
+
+| **Estrutura** | **Último** | **Penúltimo** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 4,138 | 2,798 | 0,251 |
+| LinkedList | 0,004 | 101,905 | 65,891 |
+
+**Buscas para n = 50.000.000 (ms).**
+
+| **Estrutura** | **Último** | **Penúltimo** | **Meio (n/2)** |
+|---|---:|---:|---:|
+| ArrayList  | 13,997 | 12,673 | 5,060 |
+| LinkedList | 0,004  | 2656,531 | 1367,887 |
+
+## Discussão (teoria × prática)
+
+**Inserir no fim.** Tempos praticamente constantes em ambas as estruturas ao longo dos três tamanhos ⇒ comportamento condizente com **O(1)** (amortizado no *ArrayList*).
+
+**Inserir no início.** No *ArrayList*, o tempo cresce de forma acentuada com *n* (0,023 → 0,498 → 177,947 ms) ⇒ **O(n)** devido a deslocamentos. Na *LinkedList*, permanece estável (≈ 0,002–0,004 ms) ⇒ **O(1)**, ajustando apenas ponteiros.
+
+**Inserir no meio.** Ambas crescem com *n* (**O(n)**). A *LinkedList* explode (0,912 → 42,755 → 1.351,250 ms) porque precisa percorrer ≈ `n/2` nós antes da ligação do novo nó. A *ArrayList* também cresce (0,011 → 0,194 → 93,897 ms) por copiar ≈ `n/2` elementos para a direita; ainda assim, em 50M, a constante do *ArrayList* é muito melhor (contiguidade e localidade de cache).
+
+**Buscas.** Para busca por valor via varredura (`indexOf`), espera-se **O(n)** em ambas. Os dados da *LinkedList* para *penúltimo* e *meio* evidenciam isso (2,420 → 101,905 → 2.656,531 ms; 0,388 → 65,891 → 1.367,887 ms). O caso “**último**” na *LinkedList* permaneceu quase constante (≈ 0,004 ms), o que sugere que, nessa medição específica, pode ter havido acesso direto ao último elemento (mesma referência) em vez de varredura por valor. Se a intenção for **medir varredura**, recomenda-se forçar `indexOf(new Aluno(matrícula, ...))` com `equals` por matrícula.
+
+**Efeitos de plataforma.** Saltos acentuados entre 2M e 50M (p.ex., em `ArrayList.add(0)` e `add(n/2)`) refletem fatores de *hardware*/VM: **cache misses**, largura de banda de memória, coletor de lixo e otimizações JIT. Ainda assim, as **ordens de complexidade** observadas batem com a Seção 3.
+
+## Conclusões
+- As medições **confirmam** as ordens: **O(1)** em *append*, **O(n)** em inserções no início/meio do *ArrayList*, **O(1)** no início da *LinkedList* e **O(n)** no meio pela necessidade de percurso.
+- Buscas por valor crescem **O(n)** em ambas; para grandes *n*, a *LinkedList* sofre devido ao encadeamento (*pointer chasing*).
+- Em uso prático: leituras/acesso por índice + muitos *appends* favorecem *ArrayList*; mutações nos extremos (fila/deque) com pouca busca por índice favorecem *LinkedList*.
+
+<!--
+## Repositório
+TODO: inserir link do GitHub com o código desta seção e breve descrição da organização dos arquivos.
+-->
 
 
