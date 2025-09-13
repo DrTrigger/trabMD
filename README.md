@@ -753,6 +753,53 @@ public class Main {
 ```
 
 
+## Dificuldades enfrentadas (e como foram tratadas)
+
+Manter ordenação sem expor inserção arbitrária.
+Bloqueamos adicionarPosicao(...) quando ordered == true e documentamos o contrato.
+
+Paradas antecipadas (early stop).
+Garantimos retorno imediato quando o elemento corrente excede o alvo em listas ordenadas.
+
+Consistência de comparações vs. igualdade.
+Para buscas por valor nas coleções da JDK, usamos equals por matrícula em Aluno; para ordenação/busca binária, usamos o Comparator.
+
+Leitura de arquivo grande e tempo de carga.
+Bufferização e parse simples (split(';')), com possibilidade de limitar n para bater baseline.
+
+Medição estável de tempos.
+Cronometria com System.nanoTime(); sugestão de múltiplas repetições/mediana (quando necessário).
+
+### Uso de LLM 
+
+Empreguei LLM como copiloto para acelerar partes repetitivas e revisar raciocínios, sempre com checagem manual e ajustes:
+
+Prompts (exemplos curtos):
+
+“Adapte o main com um menu interativo (while com sentinela) e tratamento de exceções.”
+
+Retornos obtidos (síntese): esqueleto de classes e métodos, rascunho do menu, texto de análise (refinado por nós)
+
+Repositório no GitHub
+
+Link: https://github.com/DrTrigger/trabMD
+### Organização (sugestão/estrutura atual):
+/src
+  /main/java
+    GenericLinkedList.java
+    Aluno.java
+    AlunoComparators.java
+    Demo.java           # menu interativo (Parte 1)
+    Bench.java          # medições da Seção 4
+    org/gerador/GeradorArquivosOrdenados.java
+/data
+  alunosOrdenados.txt  # (opcional) exemplo gerado
+/report
+  secao2.md            # análise linha a linha (complexidade)
+  secao3.md            # ArrayList vs LinkedList (teoria)
+  secao4.tex           # análise empírica (tabelas/discussão)
+README.md              # como compilar/executar
+
 ---
 
 
