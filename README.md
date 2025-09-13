@@ -19,157 +19,238 @@ Implementação completa de uma **lista encadeada genérica** em Java, que pode 
 * `GenericLinkedList.java` — a biblioteca solicitada, com: `adicionar`, `contemElemento`, `pesquisar`, `remover`, `tamanho`, `isOrdenada`, `toString`.
 * `Aluno.java` — entidade mínima com `matricula` e `nome`.
 * `AlunoComparators.java` — fábrica de comparadores (`porMatricula`, `porNome`).
-* `Demo.java` — programa simples que ilustra criação, inserção, busca e remoção.
+* `Main.java` — programa da seção 4 que popula a LinkedList e a ArrayList com dados gerados do arquivo. Aqui é onde coletamos os dados empíricos.
+* `Main2.java` — programa simples que ilustra criação, inserção, busca e remoção MANUAL, ou seja, esta é a parte 1 do trabalho.
 
 ---
 
 ## GenericLinkedList.java
 
 ```java
-import java.util.Scanner;
+package org.example;
 
-public class Demo {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("==== Configuração inicial ====");
-        boolean ordenada = perguntarOrdenacao(sc);
-        GenericLinkedList<Aluno> lista = new GenericLinkedList<>(ordenada, AlunoComparators.porMatricula());
-        System.out.println("Lista criada: " + (lista.isOrdenada() ? "ORDENADA" : "NÃO ORDENADA") + " (Comparator: matrícula)
-");
+import java.util.Comparator;
+import java.util.Objects;
 
-        // Repetidor controlado por sentinela (opção 0 encerra)
-        while (true) {
-            try {
-                exibirMenu();
-                System.out.print("Opção: ");
-                String entrada = sc.nextLine().trim();
-                int opcao = Integer.parseInt(entrada); // lança NumberFormatException se não for número
-
-                if (opcao == 0) {
-                    System.out.println("Encerrando... Até mais!");
-                    break; // sentinela
-                }
-
-                switch (opcao) {
-                    case 1:
-                        adicionarAluno(sc, lista);
-                        break;
-                    case 2:
-                        listar(lista);
-                        break;
-                    case 3:
-                        pesquisarAluno(sc, lista);
-                        break;
-                    case 4:
-                        removerAluno(sc, lista);
-                        break;
-                    case 5:
-                        inserirEmPosicao(sc, lista);
-                        break;
-                    default:
-                        System.out.println("Opção inexistente. Tente novamente.
-");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida: digite um número correspondente à opção.
-");
-            } catch (Exception e) {
-                // Tratamento genérico para qualquer outra exceção inesperada
-                System.out.println("Ocorreu um erro: " + e.getMessage());
-            }
-        }
-        sc.close();
+/**
+ * Lista encadeada genérica que pode ser ordenada ou não, conforme definido no construtor.
+ * A ordenação e as buscas usam o Comparator informado.
+ */
+public class GenericLinkedList<T> {
+    private static class Node<T> {
+        T data;
+        Node<T> next;
+        Node(T data) { this.data = data; }
     }
 
-    private static boolean perguntarOrdenacao(Scanner sc) {
-        while (true) {
-            System.out.print("Deseja lista ORDENADA por matrícula? (s/n): ");
-            String resp = sc.nextLine().trim().toLowerCase();
-            if (resp.equals("s") || resp.equals("sim")) return true;
-            if (resp.equals("n") || resp.equals("nao") || resp.equals("não")) return false;
-            System.out.println("Resposta inválida. Digite 's' ou 'n'.
-");
-        }
+    private Node<T> head;
+    private Node<T> tail;
+    private int size;
+
+    private final boolean ordered;
+    private final Comparator<? super T> comparator;
+
+    /**
+     * @param ordered    se true, a lista mantém ordem crescente definida pelo comparator
+     * @param comparator critério de comparação (não pode ser null)
+     */
+    public GenericLinkedList(boolean ordered, Comparator<? super T> comparator) {
+        this.ordered = ordered;
+        this.comparator = Objects.requireNonNull(comparator, "Comparator não pode ser null");
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
     }
 
-    private static void exibirMenu() {
-        System.out.println("==== MENU ====");
-        System.out.println("1) Adicionar aluno (padrão)");
-        System.out.println("2) Listar alunos");
-        System.out.println("3) Pesquisar aluno por matrícula");
-        System.out.println("4) Remover aluno por matrícula");
-        System.out.println("5) Inserir em posição (apenas lista NÃO ordenada)");
-        System.out.println("0) Sair");
-    }
+    public boolean isOrdenada() { return ordered; }
+    public int tamanho() { return size; }
 
-    private static void adicionarAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
-        System.out.print("Matrícula: ");
-        String mat = sc.nextLine().trim();
-        System.out.print("Nome: ");
-        String nome = sc.nextLine().trim();
-        Aluno a = new Aluno(mat, nome);
-        lista.adicionar(a);
-        System.out.println("Aluno adicionado. Lista agora: " + lista + "
-");
-    }
+    /**
+     * Adiciona um elemento. Em lista ordenada, insere na posição correta.
+     * Em lista não ordenada, insere no fim (mantemos tail para O(1)).
+     */
+    public void adicionar(T novoValor) {
+        Objects.requireNonNull(novoValor, "Valor não pode ser null");
+        Node<T> novo = new Node<>(novoValor);
 
-    private static void inserirEmPosicao(Scanner sc, GenericLinkedList<Aluno> lista) {
-        if (lista.isOrdenada()) {
-            System.out.println("Lista é ORDENADA: inserção por posição não é permitida. Use a opção 1 para manter a ordem.
-");
+        if (head == null) { // lista vazia
+            head = tail = novo;
+            size++;
             return;
         }
-        System.out.print("Índice (0.." + lista.tamanho() + "): ");
-        int idx = Integer.parseInt(sc.nextLine().trim());
-        System.out.print("Matrícula: ");
-        String mat = sc.nextLine().trim();
-        System.out.print("Nome: ");
-        String nome = sc.nextLine().trim();
-        Aluno a = new Aluno(mat, nome);
-        try {
-            lista.adicionarPosicao(idx, a);
-            System.out.println("Inserido em " + idx + ". Lista agora: " + lista + "
-");
-        } catch (IndexOutOfBoundsException ex) {
-            System.out.println("Índice inválido: " + ex.getMessage() + "
-");
+
+        if (!ordered) { // inserir no fim
+            tail.next = novo;
+            tail = novo;
+            size++;
+            return;
         }
+
+        // Lista ordenada: inserir mantendo ordem crescente
+        // Caso 1: inserir no início
+        if (comparator.compare(novoValor, head.data) <= 0) {
+            novo.next = head;
+            head = novo;
+            size++;
+            return;
+        }
+
+        // Caso 2: encontrar ponto de inserção no meio/fim
+        Node<T> prev = head;
+        Node<T> curr = head.next;
+        while (curr != null && comparator.compare(novoValor, curr.data) > 0) {
+            prev = curr;
+            curr = curr.next;
+        }
+        // insere entre prev e curr
+        prev.next = novo;
+        novo.next = curr;
+        if (curr == null) { // inseriu no fim
+            tail = novo;
+        }
+        size++;
     }
 
-    private static void listar(GenericLinkedList<Aluno> lista) {
-        System.out.println("Conteúdo da lista (tamanho=" + lista.tamanho() + "): ");
-        System.out.println(lista + "
-");
+    /**
+     * NOVO: Insere um elemento em uma posição específica [0..size].
+     *
+     * Regras:
+     * - Em **lista ordenada**, NÃO é permitido (lança IllegalStateException) para não quebrar a invariante de ordenação.
+     * - Em lista **não ordenada**:
+     *   - index==0 => insere no início (O(1))
+     *   - index==size => insere no fim (O(1)) usando tail
+     *   - 0<index<size => insere no meio (O(k))
+     */
+    public void adicionarPosicao(int index, T valor) {
+        if (ordered) {
+            throw new IllegalStateException(
+                    "Inserção por posição não permitida em lista ORDENADA; use adicionar(T) para manter a ordem.");
+        }
+        Objects.requireNonNull(valor, "Valor não pode ser null");
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Índice fora do intervalo: " + index + " (tamanho=" + size + ")");
+        }
+
+        Node<T> novo = new Node<>(valor);
+
+        // Inserção no início
+        if (index == 0) {
+            novo.next = head;
+            head = novo;
+            if (size == 0) tail = novo; // se estava vazia, tail também aponta pro novo
+            size++;
+            return;
+        }
+
+        // Inserção no fim
+        if (index == size) {
+            if (tail == null) { // lista estava vazia (size==0)
+                head = tail = novo;
+            } else {
+                tail.next = novo;
+                tail = novo;
+            }
+            size++;
+            return;
+        }
+
+        // Inserção no meio: avança até o nó anterior à posição
+        Node<T> prev = head;
+        for (int i = 1; i < index; i++) {
+            prev = prev.next;
+        }
+        novo.next = prev.next;
+        prev.next = novo;
+        size++;
     }
 
-    private static void pesquisarAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
-        System.out.print("Matrícula a pesquisar: ");
-        String mat = sc.nextLine().trim();
-        Aluno chave = new Aluno(mat, "—");
-        Aluno encontrado = lista.pesquisar(chave);
-        if (encontrado != null) {
-            System.out.println("Encontrado: " + encontrado + "
-");
-        } else {
-            System.out.println("Aluno não encontrado.
-");
-        }
+    /**
+     * Retorna true se encontrar um elemento equivalente segundo o Comparator.
+     * Em lista ordenada, para cedo quando o atual excede o valor.
+     */
+    public boolean contemElemento(T valor) {
+        return pesquisar(valor) != null;
     }
 
-    private static void removerAluno(Scanner sc, GenericLinkedList<Aluno> lista) {
-        System.out.print("Matrícula a remover: ");
-        String mat = sc.nextLine().trim();
-        Aluno chave = new Aluno(mat, "—");
-        Aluno removido = lista.remover(chave);
-        if (removido != null) {
-            System.out.println("Removido: " + removido);
-            System.out.println("Lista agora: " + lista + "
-");
-        } else {
-            System.out.println("Aluno não encontrado para remoção.
-");
+    /**
+     * Busca e retorna a referência armazenada equivalente a {@code valor},
+     * ou null se não encontrar. Em lista ordenada, faz early stop.
+     */
+    public T pesquisar(T valor) {
+        Objects.requireNonNull(valor, "Valor de busca não pode ser null");
+        Node<T> curr = head;
+        while (curr != null) {
+            int cmp = comparator.compare(curr.data, valor);
+            if (cmp == 0) return curr.data;
+            if (ordered && cmp > 0) return null; // early stop
+            curr = curr.next;
         }
+        return null;
     }
+
+    /**
+     * Remove o primeiro elemento equivalente a {@code valor} e o retorna;
+     * retorna null se não encontrar. Em lista ordenada, faz early stop.
+     */
+    public T remover(T valor) {
+        Objects.requireNonNull(valor, "Valor de remoção não pode ser null");
+        if (head == null) return null;
+
+        int cmpHead = comparator.compare(head.data, valor);
+        if (cmpHead == 0) { // remove head
+            T removed = head.data;
+            head = head.next;
+            if (head == null) tail = null; // lista ficou vazia
+            size--;
+            return removed;
+        }
+        if (ordered && cmpHead > 0) return null; // early stop
+
+        Node<T> prev = head;
+        Node<T> curr = head.next;
+        while (curr != null) {
+            int cmp = comparator.compare(curr.data, valor);
+            if (cmp == 0) {
+                T removed = curr.data;
+                prev.next = curr.next;
+                if (curr == tail) tail = prev;
+                size--;
+                return removed;
+            }
+            if (ordered && cmp > 0) return null; // early stop
+            prev = curr;
+            curr = curr.next;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        Node<T> curr = head;
+        while (curr != null) {
+            sb.append(curr.data);
+            if (curr.next != null) sb.append(", ");
+            curr = curr.next;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+
+    // dentro de GenericLinkedList<T>
+    public T obterPorIndice(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Índice: " + index + ", tamanho=" + size);
+        }
+        Node<T> curr = head;
+        for (int i = 0; i < index; i++) curr = curr.next;
+        return curr.data;
+    }
+
+
+
 }
 ```
 
