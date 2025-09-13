@@ -783,22 +783,6 @@ Retornos obtidos (síntese): esqueleto de classes e métodos, rascunho do menu, 
 Repositório no GitHub
 
 Link: https://github.com/DrTrigger/trabMD
-### Organização (sugestão/estrutura atual):
-src/
-└── main/
-    └── java/
-        └── org/
-            ├── example/
-            │   ├── Aluno.java
-            │   ├── AlunoComparators.java
-            │   ├── GenericLinkedList.java
-            │   ├── Main.java      # benchmarks/medições (Seção 4)
-            │   └── Main2.java     # versão alternativa/demonstração interativa
-            └── gerador/
-                └── GeradorArquivosOrdenados.java  # gera arquivos de entrada
-.gitignore
-README.md
-pom.xml
 
 ---
 
