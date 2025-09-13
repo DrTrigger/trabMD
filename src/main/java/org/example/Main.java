@@ -38,9 +38,9 @@ public class Main {
 
         // Buscas – ArrayList
         String nome = "ArrayList";
-        inserirFim(linkedListJDk, nome);
-        inserirInicio(linkedListJDk, nome);
-        inserirMeio(linkedListJDk, nome);
+        inserirFim(listaArrayList, nome);
+        inserirInicio(listaArrayList, nome);
+        inserirMeio(listaArrayList, nome);
         buscarUltimo(listaArrayList, "ArrayList");
         buscarPenultimo(listaArrayList, "ArrayList");
         buscarMeio(listaArrayList, "ArrayList");
